@@ -1,5 +1,6 @@
-from qdrant_client import QdrantClient, models
 from models.search import SearchResponse, SearchResult
+from qdrant_client import QdrantClient, models
+
 from services.embeddings import EmbeddingService
 
 
