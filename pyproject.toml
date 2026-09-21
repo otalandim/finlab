@@ -11,4 +11,12 @@ dependencies = [
     "pydantic-settings>=2.15.0",
     "python-dotenv>=1.2.3",
     "qdrant-client[fastembed]>=1.19.0",
+    "trafilatura>=2.2.0",
+    "transformers>=5.17.0",
+    "yfinance>=1.7.0",
+]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.3.0",
 ]
