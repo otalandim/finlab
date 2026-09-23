@@ -39,13 +39,12 @@ class AgentService:
         return "\n\n".join(all_results)
 
     async def _generate_completion(self, prompt: str, response_model=None):
-        response = await self.client.chat.completions.create(
+        return await self.client.chat.completions.create(
             model=settings.groq_model,
             messages=[{"role": "user", "content": prompt}],
             temperature=0,
             response_model=response_model,
         )
-        return response.choices[0].message.content
 
     async def _analyze_fundamental(self, ticker: str, limit: int):
         filter = {"ticker": ticker, "form_type": "10-K"}
@@ -88,8 +87,7 @@ class AgentService:
             momentum=momentum_analysis.model_dump_json(indent=2),
             sentiment=sentiment_analysis.model_dump_json(indent=2),
         )
-
-        final_recomendation = await self._generate_completion(
+        final_recommendation = await self._generate_completion(
             aggregation_prompt, FinalRecommendation
         )
 
@@ -99,5 +97,5 @@ class AgentService:
             fundamental_analysis=fundamental_analysis,
             momentum_analysis=momentum_analysis,
             sentiment_analysis=sentiment_analysis,
-            final_recommendation=final_recomendation,
+            final_recommendation=final_recommendation,
         )

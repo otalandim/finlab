@@ -19,7 +19,10 @@ class SearchService:
         must_conditions = []
         for key, value in filters.items():
             must_conditions.append(
-                {"key": f"metadata.{key}", "match": {"value": value}}
+                {
+                    "key": f"metadata.{key}",
+                    "match": {"value": value},
+                }
             )
         return {"must": must_conditions}
 
