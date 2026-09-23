@@ -88,7 +88,8 @@ class AgentService:
             sentiment=sentiment_analysis.model_dump_json(indent=2),
         )
         final_recommendation = await self._generate_completion(
-            aggregation_prompt, FinalRecommendation
+            aggregation_prompt,
+            FinalRecommendation,
         )
 
         return AgentResponse(
