@@ -1,12 +1,12 @@
 
 # FastAPI
 
-## Criando o ambiente virtual e ativando
+### Criando o ambiente virtual
 
 `python -m venv .venv`
 
 `source /.venv/bin/activate`
 
-## Iniciando servidor
+### Iniciando servidor
 
 `uv run uvicorn main:app --app-dir api --reload`
