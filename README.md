@@ -11,6 +11,10 @@
 
 `uv run uvicorn main:app --app-dir api --reload`
 
+### Executando os testes de integração
+
+pytest nome_arquivo.py -v
+
 ### Qualidade e Validação em Sistemas LLM
 
 #### Problemas de vibe checking
@@ -57,17 +61,21 @@ Testes sem estrutura e consistência
 #### Critérios de avaliação
 
 - Ticker correto?
+
 O sistema extraiu e identificou corretamente o ticker da ação?
 Exemplo: "Apple" -> deveria retornar "AAPL"
 
 - Menciona dados relevantes?
+
 A analise inclui informações importantes (preço, volume, notícias)?
 Exemplo: Menciona o preço atual, variação, contexto de mercado
 
 - Tom apropriado?
+
 O tom da resposta é profissional e adequado para análise financeira?
 Exemplo: Evita linguagem muito casual ou promessas irrealistas
 
 - Sem erros factuais?
+
 As informações apresentadas são factualmente corretas?
 Exemplo: Preços, datas, nomes das empresas estão corretos
