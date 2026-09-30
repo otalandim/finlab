@@ -1,33 +1,39 @@
+import logging
 import os
 import uuid
+import warnings
 
 from dotenv import load_dotenv
 from fastembed import LateInteractionTextEmbedding, SparseTextEmbedding, TextEmbedding
 from qdrant_client import QdrantClient, models
-from utils.edgar_client import EdgarClient
-from utils.semantic_chunker import SemanticChunker
+
+from ingestion.utils.edgar_client import EdgarClient
+from ingestion.utils.semantic_chunker import SemanticChunker
+
+warnings.filterwarnings(action="ignore")
+os.environ["TRANSFORMERS_VERBOSITY"] = "error"
+logging.getLogger("transformers").setLevel(logging.ERROR)
 
 load_dotenv()
 
-DENSE_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+DENSE_MODEL = "intfloat/multilingual-e5-large"
 SPARSE_MODEL = "Qdrant/bm25"
 COLBERT_MODEL = "colbert-ir/colbertv2.0"
 COLLECTION_NAME = "financial"
 EMAIL = "otavio.landim@gmail.com"
-MAX_TOKENS = 300
+MAX_TOKENS = 500
 
 qdrant = QdrantClient(
     url=os.getenv("QDRANT_URL"),
     api_key=os.getenv("QDRANT_API_KEY"),
 )
 
-# qdrant.delete_collection(COLLECTION_NAME)
-
 edgar = EdgarClient(email=EMAIL)
-data_10k = edgar.fetch_filing_data("AAPL", "10-K")
+
+data_10k = edgar.fetch_filing_data("NVDA", "10-K")
 text_10k = edgar.get_combined_text(data_10k)
 
-data_10q = edgar.fetch_filing_data("AAPL", "10-Q")
+data_10q = edgar.fetch_filing_data("NVDA", "10-Q")
 text_10q = edgar.get_combined_text(data_10q)
 
 chunker = SemanticChunker(max_tokens=MAX_TOKENS)
@@ -62,49 +68,4 @@ for chunk_data in all_chunks:
     )
     points.append(point)
 
-BATCH_SIZE = 50
-
-print(f"Iniciando upload de {len(points)} pontos...")
-
-for i in range(0, len(points), BATCH_SIZE):
-    batch = points[i : i + BATCH_SIZE]
-
-    qdrant.upsert(collection_name=COLLECTION_NAME, points=batch)
-
-    print(f"Enviado: itens {i} até {i + len(batch)}")
-
-print("🚀 Todos os pontos foram indexados com sucesso!")
-
-query_text = "what are the main financial risks?"
-query_dense = list(dense_model.query_embed([query_text]))[0].tolist()
-query_sparse = list(sparse_model.query_embed([query_text]))[0].as_object()
-query_colbert = list(colbert_model.query_embed([query_text]))[0].tolist()
-
-results = qdrant.query_points(
-    collection_name=COLLECTION_NAME,
-    prefetch=[
-        {
-            "prefetch": [
-                {"query": query_dense, "using": "dense", "limit": 10},
-                {"query": query_sparse, "using": "sparse", "limit": 10},
-            ],
-            "query": models.FusionQuery(fusion=models.Fusion.RRF),
-            "limit": 20,
-        }
-    ],
-    query=query_colbert,
-    using="colbert",
-    limit=3,
-)
-
-max_score = max(result.score for result in results.points)
-
-for r in results.points:
-    normalized_score = r.score / max_score
-    print(f"Score: {normalized_score}")
-    print(f"Texto: {r.payload['text'][:100]}...")
-    print("-" * 80)
-
-
-print(len(query_dense))
-print(len(query_colbert))
+qdrant.upload_points(collection_name=COLLECTION_NAME, points=points, batch_size=5)
