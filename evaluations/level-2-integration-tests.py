@@ -21,7 +21,7 @@ def test_agent_endpoint_apple():
         f"{API_BASE_URL}/agent", json={"query": test_case["query"], "limit": 3}
     )
 
-    assert response.status_code == 200
+    assert response.status_code == 200, f"A API retornou 400. Detalhes: {response.text}"
     data = response.json()
     assert data["ticker"] == test_case["expected_ticker"]
     assert "fundamental_analysis" in data
@@ -38,9 +38,9 @@ def test_agent_endpoint_ibm():
     )
 
     if response.status_code != 200:
-        print(f"\nError response: {response.text}")
+        print(f"\nError response: {response.json()}")
 
-    assert response.status_code == 200
+    assert response.status_code == 200, f"A API retornou 400. Detalhes: {response.text}"
     data = response.json()
     assert data["ticker"] == test_case["expected_ticker"]
 
@@ -63,9 +63,9 @@ def test_agent_endpoint_natural_language():
     )
 
     if response.status_code != 200:
-        print(f"\nError response: {response.text}")
+        print(f"\nError response: {response.json()}")
 
-    assert response.status_code == 200
+    assert response.status_code == 200, f"A API retornou 400. Detalhes: {response.text}"
     data = response.json()
     assert data["ticker"] == test_case["expected_ticker"]
     assert data["final_recommendation"]["action"] in ["BUY", "HOLD", "SELL"]
