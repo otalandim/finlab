@@ -11,10 +11,10 @@ warnings.simplefilter(action="ignore", category=FutureWarning)
 class SemanticChunker:
     def __init__(
         self,
-        model_name: str = "intfloat/multilingual-e5-large",
+        model_name: str = "sentence-transformers/all-MiniLM-L6-v2",
         min_cluster_size: int = 3,
         orphan_cluster_size: int = 2,
-        max_tokens: int = 500,
+        max_tokens: int = 300,
     ):
 
         self.model = SentenceTransformer(model_name)

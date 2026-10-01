@@ -18,25 +18,14 @@ qdrant.delete_collection(COLLECTION_NAME)
 qdrant.create_collection(
     collection_name=COLLECTION_NAME,
     vectors_config={
-        "dense": models.VectorParams(
-            size=1024,
-            distance=models.Distance.COSINE,
-            on_disk=True,
-        ),
+        "dense": models.VectorParams(size=384, distance=models.Distance.COSINE),
         "colbert": models.VectorParams(
             size=128,
             distance=models.Distance.COSINE,
             multivector_config=models.MultiVectorConfig(
-                comparator=models.MultiVectorComparator.MAX_SIM,
+                comparator=models.MultiVectorComparator.MAX_SIM
             ),
         ),
     },
     sparse_vectors_config={"sparse": models.SparseVectorParams()},
-    quantization_config=models.ScalarQuantization(
-        scalar=models.ScalarQuantizationConfig(
-            type=models.ScalarType.INT8,
-            quantile=0.99,
-            always_ram=True,
-        ),
-    ),
 )

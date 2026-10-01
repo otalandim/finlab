@@ -4,16 +4,17 @@ import uuid
 from dotenv import load_dotenv
 from fastembed import LateInteractionTextEmbedding, SparseTextEmbedding, TextEmbedding
 from qdrant_client import QdrantClient, models
-from utils.news_client import NewsClient
-from utils.simple_chunker import SimpleChunker
+
+from ingestion.utils.news_client import NewsClient
+from ingestion.utils.simple_chunker import SimpleChunker
 
 load_dotenv()
 
-DENSE_MODEL = "intfloat/multilingual-e5-large"
+DENSE_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 SPARSE_MODEL = "Qdrant/bm25"
 COLBERT_MODEL = "colbert-ir/colbertv2.0"
 COLLECTION_NAME = "financial"
-MAX_TOKENS = 500
+MAX_TOKENS = 300
 
 qdrant = QdrantClient(
     url=os.getenv("QDRANT_URL"),
@@ -22,8 +23,7 @@ qdrant = QdrantClient(
 
 news_client = NewsClient()
 news_data = news_client.fetch_news("AAPL", max_stories=10)
-news_data[0]["text"]
-news_data[0]["metadata"]
+
 
 chunker = SimpleChunker(max_tokens=MAX_TOKENS)
 
